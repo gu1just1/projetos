@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <img src="assets/energia.gif" alt="Demonstração do Projeto - Consumo de Energia" width="600" />
+  <img src="assets/energia.gif" alt="Projeto Calculadora de Consumo Elétrico" width="480" />
 </p>
 
 Bem-vindo ao repositório central de engenharia de software e portfólio técnico. Este repositório reúne aplicações, utilitários e algoritmos desenvolvidos com foco em excelência técnica, código limpo (*Clean Code*), tipagem estrita, testes automatizados e documentação formal.
@@ -34,6 +34,18 @@ Todo o código deste repositório adere a princípios consolidados de desenvolvi
 
 ---
 
+## 🎞️ Galeria de Assets
+
+<p align="center">
+  <img src="assets/ventilador.gif" alt="Animação Ventilador" width="220" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/rosto.gif" alt="Animação Rosto" width="220" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/poesiaarte.gif" alt="Animação PoesiaArte" width="220" />
+</p>
+
+---
+
 ## 🗂️ Estrutura do Repositório
 
 ```text
@@ -41,8 +53,11 @@ Todo o código deste repositório adere a princípios consolidados de desenvolvi
 ├── .gitignore                   # Regras de exclusão para Python, IDEs e sistemas operacionais
 ├── LICENSE                      # Licença MIT
 ├── README.md                    # Vitrine e portfólio profissional do repositório
-├── assets/                      # Recursos visuais, diagramas e mídias
-│   └── energia.gif              # Mídia demonstrativa do projeto
+├── assets/                      # Recursos visuais, animações e mídias do repositório
+│   ├── energia.gif              # Animação demonstrativa do projeto principal
+│   ├── ventilador.gif           # Asset visual animado
+│   ├── rosto.gif                # Asset visual animado
+│   └── poesiaarte.gif           # Asset visual animado
 └── consumo-energia/             # Projeto: Calculadora de Consumo Elétrico
     ├── app.py                   # Código-fonte principal com validação e tipagem estrita
     ├── test_app.py              # Suíte de testes unitários automatizados
