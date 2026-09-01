@@ -5,6 +5,10 @@
 [![Tests: Unittest](https://img.shields.io/badge/Tests-16%20Passed-success?style=for-the-badge&logo=pytest&logoColor=white)](test_app.py)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](../LICENSE)
 
+<p align="center">
+  <img src="../assets/energia.gif" alt="Demonstração do Simulador de Consumo Elétrico" width="520" />
+</p>
+
 Módulo em linha de comando (CLI) desenvolvido em Python para simulação, cálculo e projeção financeira de consumo de energia elétrica residencial para aparelhos eletrodomésticos.
 
 ---
