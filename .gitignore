@@ -76,3 +76,16 @@ projects/_legado_desktop/biblioteca/teste_seguranca/
 projects/media-downloader/.archive/
 **/teste_seguranca/
 **/.archive/
+
+# Testes e Cobertura
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# IDEs e Ambientes Locais
+.vscode/
+.idea/
