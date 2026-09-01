@@ -1,0 +1,6 @@
+yt-dlp>=2024.1.0
+requests>=2.31.0
+
+# Opcional: ativa os indicadores de CPU/Memory na barra de status.
+# Sem isso instalado, o app funciona normalmente e mostra "—" nesses campos.
+psutil>=5.9.0

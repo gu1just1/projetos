@@ -1,0 +1,31 @@
+Arquivos Python do projeto
+
+Arquivo | Tamanho (bytes)
+--- | ---
+_arquivos_antigos/organizer_backup.py | 2833
+_arquivos_antigos/organizer_backup2.py | 3309
+_arquivos_antigos/organizer_backup_fase12.py | 3146
+_arquivos_antigos/organizer_backup_fase12_final.py | 3086
+backup/interface_backup_original.py | 87669
+backup/interface_monolito_v1.py | 87669
+backup/test_downloader_backup.py | 1473
+config.py | 1025
+download/__init__.py | 0
+download/downloader.py | 19391
+gui/__init__.py | 0
+gui/interface.py | 87669
+main.py | 241
+security/__init__.py | 0
+security/hash.py | 939
+security/logs.py | 1317
+storage/__init__.py | 0
+storage/pendrive.py | 4134
+tests/test_downloader.py | 27096
+tests/test_mediavault.py | 1730
+tests/test_organizer.py | 1284
+tests/test_security.py | 1882
+tests/test_storage.py | 1862
+tests/teste_completo_backup.py | 3526
+tools/relatorio_projeto.py | 1366
+utils/__init__.py | 0
+utils/organizer.py | 5688

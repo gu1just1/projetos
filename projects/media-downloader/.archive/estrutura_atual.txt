@@ -1,0 +1,67 @@
+MediaVault — estrutura atual
+
+biblioteca/
+├── .gitignore
+├── ATAQUE/
+│   ├── Videos/
+│   │   ├── teste_seguro.mp4
+├── LEIA-ME.md
+├── _arquivos_antigos/
+│   ├── console_interface_legado.py.bak
+│   ├── organizer_backup.py
+│   ├── organizer_backup2.py
+│   ├── organizer_backup_fase12.py
+│   ├── organizer_backup_fase12_final.py
+├── arquivos_python.txt
+├── backup/
+│   ├── interface_backup_original.py
+│   ├── interface_monolito_v1.py
+│   ├── recuperacao/
+│   │   ├── test_downloader_antes_correcao.py.bak
+│   │   ├── test_downloader_backup_completo.py.bak
+│   │   ├── test_downloader_original_antes_da_correcao.py.bak
+│   ├── test_downloader_backup.py
+├── config.py
+├── data/
+│   ├── download_test/
+│   ├── history.json
+│   ├── logs/
+│   │   ├── biblioteca_midia.log
+├── download/
+│   ├── __init__.py
+│   ├── downloader.py
+├── estrutura_atual.txt
+├── gui/
+│   ├── __init__.py
+│   ├── interface.py
+├── main.py
+├── pytest.ini
+├── requirements.txt
+├── security/
+│   ├── __init__.py
+│   ├── hash.py
+│   ├── logs.py
+├── storage/
+│   ├── __init__.py
+│   ├── pendrive.py
+├── teste_seguranca/
+│   ├── teste/
+│   │   ├── Documentos/
+│   │   │   ├── NUL.docx
+│   │   │   ├── PRN.txt
+│   │   ├── Fotos/
+│   │   │   ├── AUX.jpg
+│   │   ├── Videos/
+│   │   │   ├── CON.mp4
+├── tests/
+│   ├── test_downloader.py
+│   ├── test_mediavault.py
+│   ├── test_organizer.py
+│   ├── test_security.py
+│   ├── test_storage.py
+│   ├── teste_completo_backup.py
+├── tools/
+│   ├── relatorio_projeto.py
+├── utils/
+│   ├── __init__.py
+│   ├── organizer.py
