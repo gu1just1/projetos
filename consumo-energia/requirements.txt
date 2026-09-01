@@ -1,0 +1,11 @@
+# ==============================================================================
+# Dependências do Projeto: Calculadora de Consumo Elétrico Residencial
+# ==============================================================================
+# O projeto foi desenvolvido utilizando 100% Python Standard Library (Sem dependências externas para runtime).
+# Requisito mínimo de ambiente: Python 3.10+
+#
+# Para desenvolvimento, linting e análise estática (opcionais):
+# flake8>=6.0.0
+# black>=23.0.0
+# mypy>=1.0.0
+# pytest>=7.0.0
