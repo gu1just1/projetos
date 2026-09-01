@@ -6,6 +6,10 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow?style=for-the-badge&logo=git&logoColor=white)](https://www.conventionalcommits.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
+<p align="center">
+  <img src="assets/energia.gif" alt="Demonstração do Projeto - Consumo de Energia" width="600" />
+</p>
+
 Bem-vindo ao repositório central de engenharia de software e portfólio técnico. Este repositório reúne aplicações, utilitários e algoritmos desenvolvidos com foco em excelência técnica, código limpo (*Clean Code*), tipagem estrita, testes automatizados e documentação formal.
 
 ---
@@ -38,7 +42,7 @@ Todo o código deste repositório adere a princípios consolidados de desenvolvi
 ├── LICENSE                      # Licença MIT
 ├── README.md                    # Vitrine e portfólio profissional do repositório
 ├── assets/                      # Recursos visuais, diagramas e mídias
-│   └── README.md                # Diretrizes de organização de assets
+│   └── energia.gif              # Mídia demonstrativa do projeto
 └── consumo-energia/             # Projeto: Calculadora de Consumo Elétrico
     ├── app.py                   # Código-fonte principal com validação e tipagem estrita
     ├── test_app.py              # Suíte de testes unitários automatizados
