@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>3D Retro Workstation • Authentic Windows 95</title>
+    <meta name="description" content="Estação 3D Vintage dos anos 90 com sistema operacional Windows 95/98 simulado em tempo real com aplicativos interativos, jogo da cobrinha e fidelidade visual autêntica." />
+
+    <!-- Google Fonts: IBM Plex Mono (Terminal/BIOS) & VT323 (Displays LED) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet" />
+
+    <!-- Favicon Retrô SVG Inline (Evita requisições 404 a favicon.ico) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23008080'/><path d='M3 3h10v8H3z' fill='%23c0c0c0'/><path d='M4 4h8v6H4z' fill='%23000080'/></svg>">
+
+    <!-- Folha de Estilos Principal do Windows 95 e 3D -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Three.js e Bibliotecas de Suporte -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/meshopt_decoder.js"></script>
+</head>
+
+<body>
+    <!-- Canvas Principal Three.js da Estação 3D -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Dica Flutuante de Interação 3D -->
+    <div id="hint" class="hint-pill" role="status" aria-live="polite">
+        <span class="hint-dot" id="hint-dot" aria-hidden="true"></span>
+        <span id="hint-text">Carregando Workstation 3D...</span>
+    </div>
+
+    <!-- Tela de Bootloader / BIOS Retrô -->
+    <div id="boot-screen" class="boot-screen" aria-hidden="true">
+        <div class="crt-overlay"></div>
+        <div class="boot-content">
+            <pre id="boot-text" class="boot-text"></pre>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SISTEMA OPERACIONAL RETRÔ WINDOWS 95/98 (DESKTOP INTERATIVO)
+         ============================================================ -->
+    <div id="retro-os" class="retro-os-container" role="region" aria-label="Ambiente de Trabalho Windows 95">
+
+        <!-- Área de Trabalho com Papel de Parede e Grade de Atalhos -->
+        <div id="retro-desktop" class="retro-desktop" tabindex="0">
+            <!-- Retângulo de Seleção Marquee -->
+            <div id="desktop-marquee" class="desktop-marquee is-hidden" aria-hidden="true"></div>
+
+            <!-- Grade de Ícones da Área de Trabalho -->
+            <div class="desktop-icons-grid" id="desktop-icons-grid" role="toolbar" aria-label="Área de Trabalho">
+                <button class="desktop-shortcut" data-app="explorer" data-target="mycomputer" data-param="mycomputer" id="icon-mycomputer" aria-label="Meu Computador">
+                    <div class="shortcut-icon icon-computer" aria-hidden="true"></div>
+                    <span class="shortcut-label">Meu Computador</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="explorer" data-target="projetos" data-param="projetos" id="icon-projetos" aria-label="Meus Projetos">
+                    <div class="shortcut-icon icon-folder" aria-hidden="true"></div>
+                    <span class="shortcut-label">Meus Projetos</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="explorer" data-target="sobre" data-param="sobre" id="icon-sobre" aria-label="Sobre o Sistema">
+                    <div class="shortcut-icon icon-text-doc" aria-hidden="true"></div>
+                    <span class="shortcut-label">Sobre.txt</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="about" data-target="about" data-param="about" id="icon-specs" aria-label="Propriedades do Sistema">
+                    <div class="shortcut-icon icon-specs" aria-hidden="true"></div>
+                    <span class="shortcut-label">Sistema.cpl</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="notepad" data-param="notepad" id="icon-notepad" aria-label="Bloco de Notas">
+                    <div class="shortcut-icon icon-notepad" aria-hidden="true"></div>
+                    <span class="shortcut-label">Bloco de Notas</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="mail" id="icon-mail" aria-label="Correio Retrô e Contato">
+                    <div class="shortcut-icon icon-mail" aria-hidden="true"></div>
+                    <span class="shortcut-label">Contato.eml</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="paint" id="icon-paint" aria-label="MS Paint">
+                    <div class="shortcut-icon icon-paint" aria-hidden="true"></div>
+                    <span class="shortcut-label">Paint</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="snake" id="icon-snake" aria-label="Cobrinha Retrô">
+                    <div class="shortcut-icon icon-snake" aria-hidden="true">🐍</div>
+                    <span class="shortcut-label">Cobrinha</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="calc" id="icon-calc" aria-label="Calculadora">
+                    <div class="shortcut-icon icon-calc" aria-hidden="true"></div>
+                    <span class="shortcut-label">Calculadora</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="display" id="icon-display" aria-label="Propriedades de Vídeo">
+                    <div class="shortcut-icon icon-display" aria-hidden="true"></div>
+                    <span class="shortcut-label">Propriedades</span>
+                </button>
+
+                <button class="desktop-shortcut" data-app="explorer" data-target="trash" data-param="trash" id="icon-trash" aria-label="Lixeira">
+                    <div class="shortcut-icon icon-trash-empty" aria-hidden="true"></div>
+                    <span class="shortcut-label">Lixeira</span>
+                </button>
+            </div>
+
+            <!-- ============================================================
+                 CONTAINER DE JANELAS MULTI-TASKING
+                 ============================================================ -->
+
+            <!-- 1. JANELA DO EXPLORER / MEU COMPUTADOR / PROJETOS -->
+            <div id="explorer" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="explorer" aria-labelledby="window-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span id="window-icon" class="window-title-icon icon-folder-sm" aria-hidden="true">📁</span>
+                        <span id="window-title-text" class="window-title-caption">Meus Projetos</span>
+                    </div>
+                    <div class="window-controls">
+                        <button id="btn-minimize" class="btn-win-ctrl btn-win-minimize" title="Minimizar" aria-label="Minimizar Janela">_</button>
+                        <button class="btn-win-ctrl btn-win-maximize" title="Maximizar" aria-label="Maximizar Janela">□</button>
+                        <button id="btn-back" class="btn-win-ctrl btn-win-close" title="Fechar Janela" aria-label="Fechar Janela">✕</button>
+                    </div>
+                </header>
+
+                <div class="window-menubar">
+                    <div class="menu-item" tabindex="0"><u>A</u>rquivo</div>
+                    <div class="menu-item" tabindex="0"><u>E</u>ditar</div>
+                    <div class="menu-item" tabindex="0">E<u>x</u>ibir</div>
+                    <div class="menu-item" tabindex="0">A<u>j</u>uda</div>
+                </div>
+
+                <div class="window-toolbar">
+                    <button class="btn-toolbar" id="btn-folder-back" title="Subir um nível de pasta">← Voltar</button>
+                    <div class="address-bar">
+                        <span>Endereço:</span>
+                        <input type="text" class="path-display" value="C:\DESKTOP\PROJETOS" readonly />
+                    </div>
+                </div>
+
+                <main class="explorer-body">
+                    <!-- Vista: Pasta Projetos (Dual-Pane Windows Explorer) -->
+                    <section id="view-projetos" class="explorer-view is-active" aria-label="Pasta de Projetos">
+                        <div class="projects-explorer-layout">
+                            <!-- Coluna Esquerda: Lista de Arquivos do Explorer -->
+                            <div class="projects-files-panel" role="region" aria-label="Arquivos de Projetos">
+                                <div class="projects-files-header">
+                                    <div class="files-header-col">Nome do Arquivo</div>
+                                    <div class="files-header-col">Tamanho</div>
+                                    <div class="files-header-col">Tipo</div>
+                                </div>
+                                <div class="projects-files-list" id="projects-files-list" tabindex="0" role="listbox" aria-label="Lista de Projetos">
+                                    <!-- Preenchido dinamicamente pelo ExplorerApp -->
+                                </div>
+                            </div>
+
+                            <!-- Coluna Direita: Painel de Detalhes & Pré-Visualização -->
+                            <div class="projects-details-panel" id="projects-details-panel" role="complementary" aria-label="Ficha Técnica do Projeto">
+                                <!-- Preenchido dinamicamente pelo ExplorerApp -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Vista: Meu Computador (Drives) -->
+                    <section id="view-mycomputer" class="explorer-view" aria-label="Meu Computador">
+                        <div class="view-header">
+                            <h2>Meu Computador</h2>
+                            <p>Unidades de armazenamento do sistema operacional.</p>
+                        </div>
+                        <div class="items-grid">
+                            <div class="item" tabindex="0" data-nav="projetos">
+                                <div class="item-icon icon-drive-c" aria-hidden="true"></div>
+                                <span class="item-label">Disco Local (C:)</span>
+                            </div>
+                            <div class="item" tabindex="0" data-nav="cdrom">
+                                <div class="item-icon icon-cdrom" aria-hidden="true"></div>
+                                <span class="item-label">Unidade de CD (D:)</span>
+                            </div>
+                            <div class="item" tabindex="0" data-nav="floppy">
+                                <div class="item-icon icon-floppy" aria-hidden="true"></div>
+                                <span class="item-label">Disquete 3½ (A:)</span>
+                            </div>
+                            <div class="item" tabindex="0" data-nav="specs">
+                                <div class="item-icon icon-control-panel" aria-hidden="true"></div>
+                                <span class="item-label">Painel de Controle</span>
+                            </div>
+                            <div class="item" tabindex="0" data-nav="mail">
+                                <div class="item-icon icon-mail-sm" style="width:32px;height:32px;background-size:24px 24px;background-position:center;background-repeat:no-repeat;" aria-hidden="true"></div>
+                                <span class="item-label">Correio (Outlook)</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Vista: Sobre -->
+                    <section id="view-sobre" class="explorer-view" aria-label="Sobre o Sistema">
+                        <div class="view-header">
+                            <h2>Sobre o Sistema</h2>
+                        </div>
+                        <div class="text-file-content">
+                            <p><strong>Workstation OS v2.0 [Release 1995/2026]</strong></p>
+                            <p>Desenvolvido com Three.js (WebGL), JavaScript moderno e interface gráfica autêntica do Windows 95.</p>
+                            <hr />
+                            <p>Esta experiência une a nostalgia da computação gráfica dos anos 90 com iluminação de estúdio e aplicativos interativos completos.</p>
+                            <p>Pressione <strong>← Voltar</strong> para retornar às pastas ou o botão <strong>✕</strong> para fechar a janela.</p>
+                        </div>
+                    </section>
+
+                    <!-- Vista: Lixeira -->
+                    <section id="view-trash" class="explorer-view" aria-label="Lixeira">
+                        <div class="view-header">
+                            <h2>Lixeira do Sistema</h2>
+                            <p>A lixeira está vazia.</p>
+                        </div>
+                        <div class="text-file-content text-center">
+                            <p>Nenhum item foi descartado recentemente.</p>
+                            <button class="btn-retro" id="btn-empty-trash" style="margin-top:12px;">Esvaziar Lixeira</button>
+                        </div>
+                    </section>
+
+                    <!-- Vista: Hardware / Specs -->
+                    <section id="view-specs" class="explorer-view" aria-label="Especificações de Hardware">
+                        <div class="view-header">
+                            <h2 id="specs-title">Especificações do Dispositivo</h2>
+                            <p id="specs-subtitle">Telemetria de hardware detectada em tempo real.</p>
+                        </div>
+                        <div class="text-file-content">
+                            <ul id="specs-list">
+                                <li>Carregando diagnóstico do sistema...</li>
+                            </ul>
+                        </div>
+                    </section>
+                </main>
+
+                <footer class="window-statusbar">
+                    <span id="explorer-status">3 objeto(s) selecionado(s)</span>
+                    <span class="statusbar-divider"></span>
+                    <span>1.44 MB livres</span>
+                </footer>
+            </div>
+
+            <!-- 2. BLOCO DE NOTAS (NOTEPAD.EXE) 100% FUNCIONAL -->
+            <div id="win-notepad" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="notepad" aria-labelledby="notepad-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-notepad-sm" aria-hidden="true"></span>
+                        <span id="notepad-title-text" class="window-title-caption">Sobre.txt - Bloco de Notas</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-maximize" title="Maximizar">□</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="window-menubar">
+                    <div class="menu-item" id="notepad-menu-file" tabindex="0"><u>A</u>rquivo
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="np-action-new"><u>N</u>ovo</div>
+                            <div class="dropdown-item" id="np-action-open"><u>A</u>brir...</div>
+                            <div class="dropdown-item" id="np-action-save"><u>S</u>alvar (.txt)</div>
+                            <hr class="dropdown-divider" />
+                            <div class="dropdown-item" id="np-action-exit">Sai<u>r</u></div>
+                        </div>
+                    </div>
+                    <div class="menu-item" id="notepad-menu-edit" tabindex="0"><u>E</u>ditar
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="np-action-selectall"><u>S</u>elecionar Tudo</div>
+                            <div class="dropdown-item" id="np-action-datetime"><u>H</u>ora/Data (F5)</div>
+                            <div class="dropdown-item" id="np-action-clear"><u>L</u>impar Tudo</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" id="notepad-menu-help" tabindex="0">A<u>j</u>uda
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="np-action-about"><u>S</u>obre o Bloco de Notas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notepad-body">
+                    <textarea id="notepad-textarea" class="notepad-editor" spellcheck="false" placeholder="Digite seu texto aqui..."></textarea>
+                    <input type="file" id="notepad-file-picker" accept=".txt,.doc,.md,.log" style="display:none;" />
+                </div>
+                <footer class="window-statusbar">
+                    <span id="notepad-status">Lin 1, Col 1</span>
+                    <span class="statusbar-divider"></span>
+                    <span>100% Windows (CRLF)</span>
+                </footer>
+            </div>
+
+            <!-- 3. MS PAINT (PBRUSH.EXE) -->
+            <div id="win-paint" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="paint" aria-labelledby="paint-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-paint-sm" aria-hidden="true"></span>
+                        <span id="paint-title-text" class="window-title-caption">Sem Título - Paint</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-maximize" title="Maximizar">□</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="window-menubar">
+                    <div class="menu-item" tabindex="0"><u>A</u>rquivo
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="paint-action-new"><u>N</u>ovo</div>
+                            <div class="dropdown-item" id="paint-action-clear"><u>L</u>impar Imagem</div>
+                            <div class="dropdown-item" id="paint-action-save"><u>S</u>alvar Imagem (PNG)</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0"><u>E</u>ditar</div>
+                    <div class="menu-item" tabindex="0"><u>I</u>magem</div>
+                    <div class="menu-item" tabindex="0"><u>C</u>ores</div>
+                    <div class="menu-item" tabindex="0">A<u>j</u>uda</div>
+                </div>
+                <div class="paint-workspace">
+                    <div class="paint-toolbox">
+                        <button class="paint-tool is-active" data-tool="pencil" title="Lápis">✏️</button>
+                        <button class="paint-tool" data-tool="brush" title="Pincel">🖌️</button>
+                        <button class="paint-tool" data-tool="bucket" title="Preenchimento">🪣</button>
+                        <button class="paint-tool" data-tool="eraser" title="Borracha">🧹</button>
+                        <button class="paint-tool" data-tool="line" title="Linha Reta">📏</button>
+                        <button class="paint-tool" data-tool="rect" title="Retângulo">⬜</button>
+                        <button class="paint-tool" data-tool="circle" title="Elipse">⚪</button>
+                        
+                        <div class="paint-tool-options">
+                            <label>Espessura:</label>
+                            <select id="paint-size-select" class="paint-select">
+                                <option value="2">Fino (2px)</option>
+                                <option value="5" selected>Médio (5px)</option>
+                                <option value="10">Grosso (10px)</option>
+                                <option value="20">Muito Grosso (20px)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="paint-canvas-container">
+                        <canvas id="paint-canvas" width="600" height="380"></canvas>
+                    </div>
+                </div>
+
+                <div class="paint-color-section">
+                    <div class="paint-active-colors">
+                        <div class="paint-color-preview-box">
+                            <div id="paint-color-secondary" class="color-secondary" title="Cor Secundária (Botão Direito)"></div>
+                            <div id="paint-color-primary" class="color-primary" title="Cor Primária (Botão Esquerdo)"></div>
+                        </div>
+                    </div>
+                    <div class="paint-palette-grid" id="paint-palette-grid">
+                        <!-- 28 Cores clássicas preenchidas via JS -->
+                    </div>
+                </div>
+                <footer class="window-statusbar">
+                    <span id="paint-coords">600 x 380 px</span>
+                    <span class="statusbar-divider"></span>
+                    <span>Para obter ajuda, clique em Ajuda.</span>
+                </footer>
+            </div>
+
+            <!-- 4. NOVO JOGO DA COBRINHA RETRÔ (SNAKE.EXE) -->
+            <div id="win-snake" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="snake" aria-labelledby="snake-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon" aria-hidden="true">🐍</span>
+                        <span id="snake-title-text" class="window-title-caption">Cobrinha - Windows 95</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="window-menubar">
+                    <div class="menu-item" id="snake-menu-game" tabindex="0"><u>J</u>ogo
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="snake-action-new"><u>N</u>ovo Jogo (F2)</div>
+                            <div class="dropdown-item" id="snake-action-pause"><u>P</u>ausar (Espaço)</div>
+                            <hr class="dropdown-divider" />
+                            <div class="dropdown-item" id="snake-action-exit">Sai<u>r</u></div>
+                        </div>
+                    </div>
+                    <div class="menu-item" id="snake-menu-options" tabindex="0"><u>O</u>pções
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="snake-speed-easy">Velocidade: Fácil</div>
+                            <div class="dropdown-item is-checked" id="snake-speed-med">Velocidade: Normal</div>
+                            <div class="dropdown-item" id="snake-speed-fast">Velocidade: Rápida</div>
+                            <div class="dropdown-item" id="snake-speed-insane">Velocidade: Insana</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" id="snake-menu-help" tabindex="0">A<u>j</u>uda
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="snake-action-about"><u>S</u>obre a Cobrinha</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="snake-body">
+                    <!-- Painel Superior com LED Placar e Recorde -->
+                    <div class="snake-header">
+                        <div class="snake-stat-box">
+                            <span class="snake-stat-label">PONTUAÇÃO</span>
+                            <div class="led-display" id="snake-score">000</div>
+                        </div>
+                        <button class="btn-smiley" id="btn-snake-reset" title="Reiniciar Jogo" aria-label="Reiniciar Cobrinha">🎮</button>
+                        <div class="snake-stat-box">
+                            <span class="snake-stat-label">RECORDE</span>
+                            <div class="led-display" id="snake-highscore">000</div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Arcade da Cobrinha -->
+                    <div class="snake-canvas-wrapper">
+                        <canvas id="snake-canvas" width="360" height="360"></canvas>
+                        <div id="snake-gameover-overlay" class="snake-overlay is-hidden">
+                            <h3 id="snake-overlay-title">FIM DE JOGO!</h3>
+                            <p id="snake-overlay-msg">Pontuação final: <span id="snake-final-score">0</span></p>
+                            <button class="btn-retro btn-default" id="btn-snake-playagain">Jogar Novamente (Espaço)</button>
+                        </div>
+                    </div>
+
+                    <div class="snake-controls-bar">
+                        <span>Use as setas (↑ ↓ ← →) ou WASD para controlar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. CALCULADORA (CALC.EXE) -->
+            <div id="win-calc" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="calc" aria-labelledby="calc-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-calc-sm" aria-hidden="true"></span>
+                        <span id="calc-title-text" class="window-title-caption">Calculadora</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="window-menubar">
+                    <div class="menu-item" tabindex="0"><u>E</u>xibir</div>
+                    <div class="menu-item" tabindex="0"><u>E</u>ditar</div>
+                    <div class="menu-item" tabindex="0">A<u>j</u>uda</div>
+                </div>
+                <div class="calc-body">
+                    <div class="calc-display-wrap">
+                        <input type="text" id="calc-display" class="calc-display" value="0." readonly />
+                    </div>
+                    <div class="calc-keypad">
+                        <div class="calc-memory-col">
+                            <button class="btn-calc btn-calc-mem" data-calc="MC">MC</button>
+                            <button class="btn-calc btn-calc-mem" data-calc="MR">MR</button>
+                            <button class="btn-calc btn-calc-mem" data-calc="MS">MS</button>
+                            <button class="btn-calc btn-calc-mem" data-calc="M+">M+</button>
+                        </div>
+                        <div class="calc-main-keys">
+                            <div class="calc-row">
+                                <button class="btn-calc btn-calc-top" data-calc="back">Backspace</button>
+                                <button class="btn-calc btn-calc-top" data-calc="CE">CE</button>
+                                <button class="btn-calc btn-calc-top" data-calc="C">C</button>
+                            </div>
+                            <div class="calc-grid-keys">
+                                <button class="btn-calc btn-calc-num" data-calc="7">7</button>
+                                <button class="btn-calc btn-calc-num" data-calc="8">8</button>
+                                <button class="btn-calc btn-calc-num" data-calc="9">9</button>
+                                <button class="btn-calc btn-calc-op" data-calc="/">/</button>
+                                <button class="btn-calc btn-calc-op" data-calc="sqrt">sqrt</button>
+
+                                <button class="btn-calc btn-calc-num" data-calc="4">4</button>
+                                <button class="btn-calc btn-calc-num" data-calc="5">5</button>
+                                <button class="btn-calc btn-calc-num" data-calc="6">6</button>
+                                <button class="btn-calc btn-calc-op" data-calc="*">*</button>
+                                <button class="btn-calc btn-calc-op" data-calc="%">%</button>
+
+                                <button class="btn-calc btn-calc-num" data-calc="1">1</button>
+                                <button class="btn-calc btn-calc-num" data-calc="2">2</button>
+                                <button class="btn-calc btn-calc-num" data-calc="3">3</button>
+                                <button class="btn-calc btn-calc-op" data-calc="-">-</button>
+                                <button class="btn-calc btn-calc-op" data-calc="1/x">1/x</button>
+
+                                <button class="btn-calc btn-calc-num" data-calc="0">0</button>
+                                <button class="btn-calc btn-calc-num" data-calc="+/-">+/-</button>
+                                <button class="btn-calc btn-calc-num" data-calc=".">.</button>
+                                <button class="btn-calc btn-calc-op" data-calc="+">+</button>
+                                <button class="btn-calc btn-calc-eq" data-calc="=">=</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. PROPRIEDADES DE VÍDEO (DISPLAY PROPERTIES) 100% FUNCIONAL -->
+            <div id="win-display" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="display" aria-labelledby="display-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-display-sm" aria-hidden="true"></span>
+                        <span id="display-title-text" class="window-title-caption">Propriedades de Vídeo</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="tabs-nav" role="tablist">
+                    <button class="tab-btn is-active" data-tab="tab-wallpaper" role="tab">Tela de Fundo</button>
+                    <button class="tab-btn" data-tab="tab-screensaver" role="tab">Proteção de Tela</button>
+                    <button class="tab-btn" data-tab="tab-appearance" role="tab">Aparência</button>
+                    <button class="tab-btn" data-tab="tab-settings" role="tab">Configurações</button>
+                </div>
+                <div class="tab-content-container">
+                    <!-- Aba 1: Papel de Parede -->
+                    <div id="tab-wallpaper" class="tab-pane is-active">
+                        <div class="display-monitor-preview">
+                            <div class="monitor-screen-bezel">
+                                <div id="preview-screen-bg" class="monitor-screen-inner"></div>
+                            </div>
+                        </div>
+                        <div class="wallpaper-selector-section">
+                            <label for="wallpaper-select"><strong>Papel de Parede:</strong></label>
+                            <select id="wallpaper-select" class="retro-select" size="5">
+                                <option value="classic-teal" selected>Azul Petróleo Windows 95 (Padrão)</option>
+                                <option value="clouds">Nuvens Clássicas (Clouds.bmp)</option>
+                                <option value="setup">Instalação 1995 (Setup.bmp)</option>
+                                <option value="winxp">Windows XP Bliss Clássico</option>
+                                <option value="matrix">Chuva Digital Matrix</option>
+                                <option value="cyber">Cyberpunk Workstation</option>
+                            </select>
+                            <div class="wallpaper-actions">
+                                <button class="btn-retro" id="btn-browse-wallpaper">Procurar Imagem...</button>
+                                <input type="file" id="file-custom-wallpaper" accept="image/*" style="display:none;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba 2: Proteção de Tela -->
+                    <div id="tab-screensaver" class="tab-pane">
+                        <div class="display-monitor-preview">
+                            <div class="monitor-screen-bezel">
+                                <canvas id="screensaver-preview-canvas" class="monitor-screen-inner" width="160" height="110"></canvas>
+                            </div>
+                        </div>
+                        <div class="screensaver-controls">
+                            <label for="screensaver-select"><strong>Protetor de Tela:</strong></label>
+                            <select id="screensaver-select" class="retro-select">
+                                <option value="starfield" selected>Campo Estelar 3D (Starfield)</option>
+                                <option value="matrix">Chuva Matrix (Matrix Rain)</option>
+                                <option value="flying-windows">Logos Voadores do Windows</option>
+                                <option value="snake-ai">Cobrinha Automática 2D</option>
+                                <option value="none">(Nenhum)</option>
+                            </select>
+                            <div class="screensaver-delay-row" style="margin-top:10px;">
+                                <button class="btn-retro" id="btn-preview-screensaver">Visualizar</button>
+                                <label for="screensaver-time">Aguardar: <input type="number" id="screensaver-time" value="3" min="1" max="60" style="width:45px;" /> min</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba 3: Aparência / Temas de Cores -->
+                    <div id="tab-appearance" class="tab-pane">
+                        <div class="theme-picker-section">
+                            <label for="theme-select"><strong>Esquema de Cores:</strong></label>
+                            <select id="theme-select" class="retro-select">
+                                <option value="win95-default" selected>Padrão do Windows 95 (Clássico)</option>
+                                <option value="win98-teal">Windows 98 Azul Petróleo</option>
+                                <option value="high-contrast">Alto Contraste Preto</option>
+                                <option value="desert">Deserto Retrô (Ocre / Bege)</option>
+                                <option value="matrix-hacker">Terminal Matrix Hacker</option>
+                                <option value="vaporwave">Vaporwave Retrô (Roxo / Rosa)</option>
+                            </select>
+                            <div class="theme-sample-box" style="margin-top:12px;">
+                                <div class="theme-sample-win" id="theme-sample-win">
+                                    <div class="theme-sample-title" id="theme-sample-title">Janela Ativa</div>
+                                    <div class="theme-sample-body">Exemplo de texto do sistema operacional.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba 4: Configurações de Resolução CRT & Efeitos -->
+                    <div id="tab-settings" class="tab-pane">
+                        <div class="settings-section">
+                            <p><strong>Monitor:</strong> Monitor CRT VESA Plug and Play</p>
+                            <p><strong>Cores:</strong> 256 Cores / True Color (24-bit)</p>
+                            <hr class="dropdown-divider" style="margin:10px 0;" />
+                            <label for="res-slider"><strong>Área de Exibição da Tela:</strong></label>
+                            <input type="range" id="res-slider" min="1" max="3" value="2" class="retro-range" style="width:100%;margin-top:6px;" />
+                            <div id="res-display-text" style="font-weight:700;margin-top:6px;">800 x 600 pixels</div>
+                            <hr class="dropdown-divider" style="margin:10px 0;" />
+                            <label for="crt-mode-select"><strong>Efeito de Monitor CRT (Tubo):</strong></label>
+                            <select id="crt-mode-select" class="retro-select" style="width:100%;margin-top:6px;">
+                                <option value="subtle" selected>Sutil (Recomendado - Scanlines Suaves / WCAG AA)</option>
+                                <option value="tube">Tubo Autêntico (Scanlines + Vinheta Curva)</option>
+                                <option value="off">Desligado (Nitidez Plana 100%)</option>
+                            </select>
+                            <p style="font-size:10px;color:#444444;margin-top:4px;">
+                                Simula a textura analógica e fósforo de monitores clássicos sem prejudicar a leitura.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-apply-display">OK</button>
+                    <button class="btn-retro" id="btn-cancel-display">Cancelar</button>
+                    <button class="btn-retro" id="btn-save-display">Aplicar</button>
+                </div>
+            </div>
+
+            <!-- 7. GERENCIADOR DE TAREFAS (TASK MANAGER) -->
+            <div id="win-taskmgr" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="taskmgr" aria-labelledby="taskmgr-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-taskmgr-sm" aria-hidden="true"></span>
+                        <span id="taskmgr-title-text" class="window-title-caption">Gerenciador de Tarefas do Windows</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="taskmgr-body">
+                    <div class="taskmgr-list-wrap">
+                        <label><strong>Aplicativos em Execução:</strong></label>
+                        <div id="taskmgr-tasks-list" class="taskmgr-list" tabindex="0"></div>
+                    </div>
+                    <div class="taskmgr-cpu-section">
+                        <label><strong>Uso de CPU do Sistema:</strong></label>
+                        <canvas id="taskmgr-cpu-canvas" width="280" height="70"></canvas>
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro" id="btn-taskmgr-endtask">Finalizar Tarefa</button>
+                    <button class="btn-retro" id="btn-taskmgr-switch">Alternar Para</button>
+                </div>
+            </div>
+
+            <!-- 8. DIÁLOGO EXECUTAR (RUN DIALOG) -->
+            <div id="win-run" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="run" aria-labelledby="run-title-text" style="max-width:380px;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-run-sm" aria-hidden="true"></span>
+                        <span id="run-title-text" class="window-title-caption">Executar</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="run-dialog-body">
+                    <div class="run-dialog-icon icon-run-sm"></div>
+                    <div class="run-dialog-fields">
+                        <p>Digite o nome do programa, pasta ou documento para o Windows abri-lo:</p>
+                        <label for="run-input"><strong>Abrir:</strong></label>
+                        <input type="text" id="run-input" class="run-input" placeholder="ex: notepad, paint, snake, calc, display" />
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-run-ok">OK</button>
+                    <button class="btn-retro" id="btn-run-cancel">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- 9. DIÁLOGO DESLIGAR (SHUTDOWN DIALOG) -->
+            <div id="win-shutdown" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="shutdown" aria-labelledby="shutdown-title-text" style="max-width:360px;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-shutdown-sm" aria-hidden="true"></span>
+                        <span id="shutdown-title-text" class="window-title-caption">Desligar o Computador</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="shutdown-dialog-body">
+                    <div class="shutdown-dialog-icon icon-shutdown-lg"></div>
+                    <div class="shutdown-dialog-options">
+                        <p><strong>O que você deseja que o computador faça?</strong></p>
+                        <label><input type="radio" name="shutdown-opt" value="shutdown-3d" checked /> Retornar à visão 3D do computador</label>
+                        <label><input type="radio" name="shutdown-opt" value="restart" /> Reiniciar o computador</label>
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-shutdown-confirm">Sim</button>
+                    <button class="btn-retro" id="btn-shutdown-cancel">Não</button>
+                </div>
+            </div>
+
+            <!-- 10. DIÁLOGO DE DATA E HORA -->
+            <div id="win-datetime" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="datetime" aria-labelledby="datetime-title-text" style="max-width:360px;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-clock-sm" aria-hidden="true"></span>
+                        <span id="datetime-title-text" class="window-title-caption">Propriedades de Data/Hora</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="datetime-body">
+                    <div class="datetime-calendar-col">
+                        <div class="calendar-header-nav">
+                            <button class="btn-cal-nav" id="cal-prev-month">◀</button>
+                            <span id="cal-month-year" class="cal-month-title">Agosto 2026</span>
+                            <button class="btn-cal-nav" id="cal-next-month">▶</button>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid">
+                            <!-- Dias do calendário renderizados via JS -->
+                        </div>
+                    </div>
+                    <div class="datetime-clock-col">
+                        <canvas id="analog-clock-canvas" width="130" height="130"></canvas>
+                        <div id="digital-time-display" class="digital-time-display">12:00:00</div>
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-datetime-ok">OK</button>
+                    <button class="btn-retro" id="btn-datetime-cancel">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- 11. CLIENTE DE E-MAIL RETRÔ (OUTLOOK EXPRESS 98) / CONTATO -->
+            <div id="win-mail" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="mail" aria-labelledby="mail-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-mail-sm" aria-hidden="true"></span>
+                        <span id="mail-title-text" class="window-title-caption">Nova Mensagem - Outlook Express</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-maximize" title="Maximizar">□</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="window-menubar">
+                    <div class="menu-item" tabindex="0"><u>A</u>rquivo
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="mail-menu-send"><u>E</u>nviar Mensagem</div>
+                            <div class="dropdown-item" id="mail-menu-copy"><u>C</u>opiar Endereço</div>
+                            <hr class="dropdown-divider" />
+                            <div class="dropdown-item" id="mail-menu-close">Sai<u>r</u></div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0"><u>E</u>ditar
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="mail-menu-clear"><u>L</u>impar Campos</div>
+                            <div class="dropdown-item" id="mail-menu-selectall"><u>S</u>elecionar Tudo</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0"><u>E</u>xibir
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="mail-menu-toggle-book"><u>C</u>atálogo de Endereços</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0">A<u>j</u>uda
+                        <div class="menu-dropdown is-hidden">
+                            <div class="dropdown-item" id="mail-menu-about">Sobre o <u>C</u>orreio 98...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="window-toolbar mail-toolbar">
+                    <button class="btn-retro btn-toolbar" id="btn-mail-send" title="Disparar envio via cliente de e-mail">
+                        <span class="icon-send-mail" aria-hidden="true"></span>
+                        <span>Enviar</span>
+                    </button>
+                    <button class="btn-retro btn-toolbar" id="btn-mail-copy" title="Copiar e-mail de contato para a área de transferência">
+                        <span class="icon-copy-mail" aria-hidden="true"></span>
+                        <span>Copiar E-mail</span>
+                    </button>
+                    <span class="toolbar-separator" aria-hidden="true"></span>
+                    <button class="btn-retro btn-toolbar" id="btn-mail-addressbook" title="Exibir ou ocultar Catálogo de Endereços / Redes">
+                        <span class="icon-address-book" aria-hidden="true"></span>
+                        <span>Catálogo</span>
+                    </button>
+                    <button class="btn-retro btn-toolbar" id="btn-mail-clear" title="Limpar todos os campos">
+                        <span>Limpar</span>
+                    </button>
+                </div>
+                <div class="mail-headers-area">
+                    <div class="mail-header-row">
+                        <label class="mail-header-label" for="mail-to"><u>P</u>ara:</label>
+                        <div class="mail-input-group">
+                            <input type="email" id="mail-to" class="mail-input readonly-input" value="guiijjusti@gmail.com" readonly title="E-mail de contato de Guilherme Gomes Justi" />
+                            <button class="btn-retro btn-copy-inline" id="btn-mail-to-copy" title="Copiar e-mail de contato">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="mail-header-row">
+                        <label class="mail-header-label" for="mail-from"><u>D</u>e:</label>
+                        <input type="email" id="mail-from" class="mail-input" placeholder="seu-email@dominio.com" title="Seu e-mail de retorno" />
+                    </div>
+                    <div class="mail-header-row">
+                        <label class="mail-header-label" for="mail-subject">Ass<u>u</u>nto:</label>
+                        <input type="text" id="mail-subject" class="mail-input" placeholder="Oportunidade / Proposta de Projeto / Parceria" title="Assunto da mensagem" />
+                    </div>
+                </div>
+                <div class="mail-content-container">
+                    <div class="mail-body-wrapper">
+                        <textarea id="mail-body" class="mail-body-textarea" placeholder="Olá, Guilherme! Vi seu portfólio retrô e gostaria de conversar sobre...&#10;&#10;Sinta-se à vontade para enviar uma mensagem detalhada com propostas, dúvidas ou parcerias." title="Corpo da mensagem"></textarea>
+                    </div>
+                    <aside id="mail-addressbook-panel" class="mail-addressbook-drawer" aria-label="Catálogo de Endereços e Redes Sociais">
+                        <div class="addressbook-header">
+                            <span class="icon-address-book" aria-hidden="true"></span>
+                            <span>Catálogo de Contatos</span>
+                        </div>
+                        <div class="addressbook-list">
+                            <a href="https://github.com/gu1just1" target="_blank" rel="noopener noreferrer" class="address-card" title="Abrir perfil no GitHub (Abre em nova aba)">
+                                <div class="address-card-icon icon-github" aria-hidden="true"></div>
+                                <div class="address-card-info">
+                                    <span class="address-name">GitHub</span>
+                                    <span class="address-handle">@gu1just1</span>
+                                </div>
+                                <span class="address-badge">Link ↗</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/guilherme-justi" target="_blank" rel="noopener noreferrer" class="address-card" title="Abrir perfil no LinkedIn (Abre em nova aba)">
+                                <div class="address-card-icon icon-linkedin" aria-hidden="true"></div>
+                                <div class="address-card-info">
+                                    <span class="address-name">LinkedIn</span>
+                                    <span class="address-handle">in/guilherme-justi</span>
+                                </div>
+                                <span class="address-badge">Link ↗</span>
+                            </a>
+                            <a href="#curriculo" id="btn-download-cv" class="address-card" title="Baixar Currículo Profissional (.txt)">
+                                <div class="address-card-icon icon-text-doc-sm" aria-hidden="true"></div>
+                                <div class="address-card-info">
+                                    <span class="address-name">Currículo Vitae</span>
+                                    <span class="address-handle">Curriculo_Guilherme_2026.txt</span>
+                                </div>
+                                <span class="address-badge">Baixar ⤓</span>
+                            </a>
+                            <div class="address-note">
+                                <p>💡 <em>Clique para abrir os links externos em nova aba com segurança, ou baixe o currículo direto.</em></p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+                <footer class="window-statusbar mail-statusbar">
+                    <span id="mail-status">Pronto para envio | 1 destinatário</span>
+                    <span class="statusbar-divider" aria-hidden="true"></span>
+                    <span id="mail-connection-status">Rede: Conexão Dial-up Ativa (56 Kbps)</span>
+                </footer>
+            </div>
+
+            <!-- 12. PROPRIEDADES DO SISTEMA (SYSDM.CPL) / SOBRE MIM E GERENCIADOR DE DISPOSITIVOS -->
+            <div id="win-about" class="explorer-window win-dialog is-hidden" role="dialog" data-app-id="about" aria-labelledby="about-title-text">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon icon-specs-sm" aria-hidden="true"></span>
+                        <span id="about-title-text" class="window-title-caption">Propriedades do Sistema</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="btn-win-ctrl btn-win-minimize" title="Minimizar">_</button>
+                        <button class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+
+                <div class="tab-bar sys-tab-bar" role="tablist">
+                    <button class="tab-btn is-active" id="tab-sys-general" data-tab="general" role="tab" aria-selected="true" aria-controls="pane-sys-general">Geral</button>
+                    <button class="tab-btn" id="tab-sys-devmgr" data-tab="devmgr" role="tab" aria-selected="false" aria-controls="pane-sys-devmgr">Gerenciador de Dispositivos</button>
+                </div>
+
+                <div class="tab-content-container sys-tab-content">
+                    <!-- Aba 1: Geral (Sobre Mim & Sistema) -->
+                    <div class="tab-pane is-active" id="pane-sys-general" role="tabpanel" aria-labelledby="tab-sys-general">
+                        <div class="sys-general-layout">
+                            <div class="sys-badge-column">
+                                <div class="sys-pc-illustration" aria-hidden="true"></div>
+                            </div>
+                            <div class="sys-info-column">
+                                <div class="sys-section-block">
+                                    <span class="sys-section-heading">Sistema:</span>
+                                    <p class="sys-info-text font-bold">RetroOS Workstation 98 SE</p>
+                                    <p class="sys-info-text">Versão 4.10.2222 A (Build 2026)</p>
+                                    <p class="sys-info-text">Engenharia de Software &amp; Creative Tech</p>
+                                </div>
+
+                                <div class="sys-section-block">
+                                    <span class="sys-section-heading">Registrado para:</span>
+                                    <p class="sys-info-text font-bold">Guilherme Gomes Justi</p>
+                                    <p class="sys-info-text">Ciência da Computação - Unoeste</p>
+                                    <p class="sys-info-text">Foco: C, C++, Python, Linux, Web &amp; 3D</p>
+                                </div>
+
+                                <div class="sys-section-block">
+                                    <span class="sys-section-heading">Computador:</span>
+                                    <p class="sys-info-text">Intel(R) Pentium(R) Pro MMX @ 200 MHz</p>
+                                    <p class="sys-info-text">128 MB RAM (64 MB VRAM WebGL Three.js)</p>
+                                    <p class="sys-info-text">Pipeline Gráfico: Shaders GLSL / Canvas 2D</p>
+                                    <p class="sys-info-text">Identificação: RETRO-WS-98-DEV-UNOESTE</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba 2: Gerenciador de Dispositivos (Treeview de Habilidades e Tecnologias) -->
+                    <div class="tab-pane" id="pane-sys-devmgr" role="tabpanel" aria-labelledby="tab-sys-devmgr">
+                        <div class="devmgr-view-bar">
+                            <label class="devmgr-radio-label">
+                                <input type="radio" name="devmgr-view-type" checked />
+                                <span>Exibir dispositivos por tipo de tecnologia</span>
+                            </label>
+                        </div>
+
+                        <div class="treeview-box" id="devmgr-treeview" role="tree" tabindex="0" aria-label="Árvore de Dispositivos e Habilidades">
+                            <ul class="tree-root">
+                                <li class="tree-node is-expanded" role="treeitem" aria-expanded="true">
+                                    <div class="tree-node-content is-category" data-type="root">
+                                        <button class="tree-expander" aria-label="Expandir ou recolher">-</button>
+                                        <span class="tree-icon icon-computer-sm" aria-hidden="true"></span>
+                                        <span class="tree-label">Workstation-Dev (Sistema de Computação)</span>
+                                    </div>
+                                    <ul class="tree-children">
+                                        <!-- Processadores -->
+                                        <li class="tree-node is-expanded" role="treeitem" aria-expanded="true">
+                                            <div class="tree-node-content is-category" data-type="cpu">
+                                                <button class="tree-expander">-</button>
+                                                <span class="tree-icon icon-dev-cpu" aria-hidden="true"></span>
+                                                <span class="tree-label">Processadores (Algoritmos &amp; Core)</span>
+                                            </div>
+                                            <ul class="tree-children">
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Linguagem de alta performance para algoritmos e simulações">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">C++ &amp; Algoritmos de Alta Eficiência</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Estruturas otimizadas para processamento em tempo real">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Estruturas de Dados Avançadas &amp; Complexidade O(1)/O(n)</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Gerenciamento multitarefa cooperativo e lifecycle de processos">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Concorrência, Multithreading &amp; Process Table Kernel</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <!-- Adaptadores de Vídeo -->
+                                        <li class="tree-node is-expanded" role="treeitem" aria-expanded="true">
+                                            <div class="tree-node-content is-category" data-type="gpu">
+                                                <button class="tree-expander">-</button>
+                                                <span class="tree-icon icon-dev-gpu" aria-hidden="true"></span>
+                                                <span class="tree-label">Adaptadores de Vídeo (Computação Gráfica &amp; UI)</span>
+                                            </div>
+                                            <ul class="tree-children">
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Motor de renderização 3D em tempo real no navegador">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Three.js &amp; WebGL 1.0/2.0 Engine</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Shaders para pós-processamento, vinhetas e scanlines autênticas">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">GLSL Shaders (Scanlines, CRT Phosphor &amp; Vignette)</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Manipulação gráfica direta de pixels e algoritmos de preenchimento">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Canvas 2D API (Rasterização, Paint &amp; Mini-Games)</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Aceleração por GPU para transições e arraste com zero repaint">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">CSS3 Hardware Transforms (translate3d &amp; Double Bevel)</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <!-- Interfaces de Rede -->
+                                        <li class="tree-node is-expanded" role="treeitem" aria-expanded="true">
+                                            <div class="tree-node-content is-category" data-type="net">
+                                                <button class="tree-expander">-</button>
+                                                <span class="tree-icon icon-dev-net" aria-hidden="true"></span>
+                                                <span class="tree-label">Adaptadores de Rede (Comunicação &amp; DevOps)</span>
+                                            </div>
+                                            <ul class="tree-children">
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Troca de mensagens e comunicação em tempo real">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Protocolos HTTP / HTTPS &amp; WebSockets Sync</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Comunicação desacoplada entre camadas frontend e serviços">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Arquiteturas RESTful &amp; APIs Modernas</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Controle de versões distribuído e automação de builds">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Git / GitHub &amp; CI/CD Pipelines</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <!-- Controladores de Armazenamento -->
+                                        <li class="tree-node is-expanded" role="treeitem" aria-expanded="true">
+                                            <div class="tree-node-content is-category" data-type="hdd">
+                                                <button class="tree-expander">-</button>
+                                                <span class="tree-icon icon-dev-hdd" aria-hidden="true"></span>
+                                                <span class="tree-label">Controladores de Armazenamento (Persistência &amp; Memória)</span>
+                                            </div>
+                                            <ul class="tree-children">
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Estruturas de alta velocidade para indexação">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Estruturas em Memória (Maps, Sets, TypedArrays)</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Manipulação de buffers binários para WebGL e áudio">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Arrays Primitivos &amp; Float32Array Buffers</span>
+                                                    </div>
+                                                </li>
+                                                <li class="tree-node is-leaf" role="treeitem">
+                                                    <div class="tree-node-content is-leaf-item" data-desc="Persistência reativa local de configurações do sistema">
+                                                        <span class="tree-spacer"></span>
+                                                        <span class="tree-icon icon-dev-chip" aria-hidden="true"></span>
+                                                        <span class="tree-label">Web Storage API (LocalStorage Reativo)</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="devmgr-actions-row">
+                            <button class="btn-retro" id="btn-devmgr-props" disabled>Propriedades</button>
+                            <button class="btn-retro" id="btn-devmgr-refresh">Atualizar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-sys-ok">OK</button>
+                    <button class="btn-retro" id="btn-sys-cancel">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 MENUS DE CONTEXTO FLUTUANTES (BOTÃO DIREITO) 100% FUNCIONAIS
+                 ============================================================ -->
+            <!-- Menu de Contexto da Área de Trabalho -->
+            <div id="ctx-desktop" class="context-menu is-hidden" role="menu">
+                <div class="context-item has-sub" id="ctx-dt-arrange">
+                    <span><u>O</u>rganizar Ícones</span>
+                    <span class="context-arrow">►</span>
+                    <div class="context-submenu is-hidden" id="ctx-dt-arrange-sub">
+                        <div class="context-item" id="ctx-dt-sort-name">Por <u>N</u>ome</div>
+                        <div class="context-item" id="ctx-dt-sort-type">Por <u>T</u>ipo</div>
+                        <div class="context-item" id="ctx-dt-sort-auto"><u>A</u>uto-organizar</div>
+                    </div>
+                </div>
+                <div class="context-item" id="ctx-dt-grid">Alinhar à <u>G</u>rade</div>
+                <hr class="context-divider" />
+                <div class="context-item" id="ctx-dt-refresh"><u>A</u>tualizar (F5)</div>
+                <hr class="context-divider" />
+                <div class="context-item has-sub" id="ctx-dt-new">
+                    <span><u>N</u>ovo</span>
+                    <span class="context-arrow">►</span>
+                    <div class="context-submenu is-hidden" id="ctx-dt-new-sub">
+                        <div class="context-item" id="ctx-dt-new-folder"><u>P</u>asta</div>
+                        <div class="context-item" id="ctx-dt-new-txt">Documento de <u>T</u>exto</div>
+                        <div class="context-item" id="ctx-dt-new-bmp">Imagem de <u>B</u>itmap</div>
+                    </div>
+                </div>
+                <hr class="context-divider" />
+                <div class="context-item font-bold" id="ctx-dt-props">P<u>r</u>opriedades</div>
+            </div>
+
+            <!-- Menu de Contexto de Ícone -->
+            <div id="ctx-icon" class="context-menu is-hidden" role="menu">
+                <div class="context-item font-bold" id="ctx-ic-open"><u>A</u>brir</div>
+                <div class="context-item" id="ctx-ic-cut">Cor<u>t</u>ar</div>
+                <div class="context-item" id="ctx-ic-copy"><u>C</u>opiar</div>
+                <hr class="context-divider" />
+                <div class="context-item" id="ctx-ic-delete"><u>E</u>xcluir</div>
+                <div class="context-item" id="ctx-ic-rename"><u>R</u>enomear</div>
+                <hr class="context-divider" />
+                <div class="context-item" id="ctx-ic-props">P<u>r</u>opriedades</div>
+            </div>
+
+            <!-- Menu de Contexto da Barra de Tarefas -->
+            <div id="ctx-taskbar" class="context-menu is-hidden" role="menu">
+                <div class="context-item" id="ctx-tb-cascade"><u>C</u>ascata</div>
+                <div class="context-item" id="ctx-tb-tile-h">Lado a Lado <u>H</u>orizontal</div>
+                <div class="context-item" id="ctx-tb-tile-v">Lado a Lado <u>V</u>ertical</div>
+                <div class="context-item" id="ctx-tb-minimize-all"><u>M</u>inimizar Todas as Janelas</div>
+                <hr class="context-divider" />
+                <div class="context-item" id="ctx-tb-taskmgr"><u>G</u>erenciador de Tarefas...</div>
+                <hr class="context-divider" />
+                <div class="context-item" id="ctx-tb-props">P<u>r</u>opriedades...</div>
+            </div>
+
+        </div>
+
+        <!-- ============================================================
+             MENU INICIAR COM SUBMENUS HIERÁRQUICOS
+             ============================================================ -->
+        <div id="start-menu" class="start-menu is-hidden" role="menu">
+            <div class="start-menu-sidebar">
+                <span><strong>Windows</strong>95</span>
+            </div>
+            <div class="start-menu-items">
+                <!-- Programas com Submenu -->
+                <div class="start-item has-submenu" id="start-programs">
+                    <span class="start-item-icon icon-programs"></span>
+                    <span class="start-item-label"><u>P</u>rogramas</span>
+                    <span class="start-submenu-arrow">►</span>
+
+                    <div class="start-flyout-menu is-hidden" id="start-flyout-programs">
+                        <div class="start-item has-submenu" id="start-accessories">
+                            <span class="start-item-icon icon-accessories"></span>
+                            <span class="start-item-label">Acessórios</span>
+                            <span class="start-submenu-arrow">►</span>
+
+                            <div class="start-flyout-menu is-hidden" id="start-flyout-accessories">
+                                <div class="start-item has-submenu" id="start-games">
+                                    <span class="start-item-icon icon-games"></span>
+                                    <span class="start-item-label">Jogos</span>
+                                    <span class="start-submenu-arrow">►</span>
+
+                                    <div class="start-flyout-menu is-hidden" id="start-flyout-games">
+                                        <button class="start-item" data-app="snake"><span class="start-item-icon">🐍</span> Cobrinha</button>
+                                    </div>
+                                </div>
+                                <button class="start-item" data-app="notepad"><span class="start-item-icon icon-notepad-sm"></span> Bloco de Notas</button>
+                                <button class="start-item" data-app="paint"><span class="start-item-icon icon-paint-sm"></span> Paint</button>
+                                <button class="start-item" data-app="calc"><span class="start-item-icon icon-calc-sm"></span> Calculadora</button>
+                                <button class="start-item" data-app="mail"><span class="start-item-icon icon-mail-sm"></span> Correio Retrô (Outlook)</button>
+                            </div>
+                        </div>
+                        <button class="start-item" data-app="explorer" data-target="projetos" data-param="projetos"><span class="start-item-icon icon-folder-sm"></span> Meus Projetos</button>
+                        <button class="start-item" data-app="about"><span class="start-item-icon icon-specs-sm"></span> Propriedades do Sistema</button>
+                    </div>
+                </div>
+
+                <!-- Documentos -->
+                <div class="start-item has-submenu" id="start-docs">
+                    <span class="start-item-icon icon-docs"></span>
+                    <span class="start-item-label"><u>D</u>ocumentos</span>
+                    <span class="start-submenu-arrow">►</span>
+
+                    <div class="start-flyout-menu is-hidden" id="start-flyout-docs">
+                        <button class="start-item" data-app="notepad" data-target="sobre" data-param="sobre"><span class="start-item-icon icon-text-doc-sm"></span> Sobre.txt</button>
+                        <button class="start-item" data-app="mail"><span class="start-item-icon icon-mail-sm"></span> Contato.eml</button>
+                        <button class="start-item" data-app="explorer" data-target="projetos" data-param="projetos"><span class="start-item-icon icon-folder-sm"></span> Meus Projetos</button>
+                    </div>
+                </div>
+
+                <!-- Configurações -->
+                <div class="start-item has-submenu" id="start-settings">
+                    <span class="start-item-icon icon-settings"></span>
+                    <span class="start-item-label"><u>C</u>onfigurações</span>
+                    <span class="start-submenu-arrow">►</span>
+
+                    <div class="start-flyout-menu is-hidden" id="start-flyout-settings">
+                        <button class="start-item" data-app="display"><span class="start-item-icon icon-display-sm"></span> Propriedades de Vídeo</button>
+                        <button class="start-item" data-app="taskmgr"><span class="start-item-icon icon-taskmgr-sm"></span> Gerenciador de Tarefas</button>
+                        <button class="start-item" data-app="about"><span class="start-item-icon icon-specs-sm"></span> Propriedades do Sistema</button>
+                    </div>
+                </div>
+
+                <!-- Ajuda -->
+                <button class="start-item" data-app="notepad" data-target="sobre" data-param="sobre">
+                    <span class="start-item-icon icon-help"></span>
+                    <span class="start-item-label">A<u>j</u>uda</span>
+                </button>
+
+                <!-- Executar -->
+                <button class="start-item" id="start-btn-run" data-app="run">
+                    <span class="start-item-icon icon-run-sm"></span>
+                    <span class="start-item-label"><u>E</u>xecutar...</span>
+                </button>
+
+                <hr class="start-divider" />
+
+                <!-- Desligar -->
+                <button id="btn-shutdown" class="start-item shutdown-item">
+                    <span class="start-item-icon icon-shutdown-sm"></span>
+                    <span class="start-item-label"><u>D</u>esligar...</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             POPUP DE VOLUME DA BANDEJA (SNDVOL32.EXE / SYSTEM TRAY MIXER)
+             ============================================================ -->
+        <div id="tray-vol-popup" class="tray-volume-popup is-hidden" role="dialog" aria-label="Controle de Volume">
+            <div class="volume-popup-header">
+                <span>Volume</span>
+            </div>
+            <div class="volume-popup-body">
+                <div class="volume-scale-labels">
+                    <span class="vol-label-high">Alto</span>
+                    <span class="vol-label-low">Baixo</span>
+                </div>
+                <div class="volume-slider-track-wrap">
+                    <input type="range" id="master-volume-slider" min="0" max="100" value="70" orient="vertical" class="volume-slider" aria-label="Volume Geral do Sistema" />
+                </div>
+            </div>
+            <div class="volume-mute-row">
+                <label for="master-volume-mute"><input type="checkbox" id="master-volume-mute" /> <u>S</u>em áudio</label>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             BARRA DE TAREFAS CLÁSSICA AUTÊNTICA
+             ============================================================ -->
+        <footer id="retro-taskbar" class="retro-taskbar">
+            <!-- Botão Iniciar 3D Clássico -->
+            <button id="btn-start" class="btn-start" aria-label="Menu Iniciar" aria-expanded="false">
+                <span class="start-logo-icon" aria-hidden="true"></span>
+                <strong>Iniciar</strong>
+            </button>
+
+            <!-- Barra de Inicialização Rápida (Quick Launch) -->
+            <div class="quick-launch-bar" aria-label="Inicialização Rápida">
+                <span class="quick-launch-handle"></span>
+                <button class="btn-quick-launch" data-app="desktop-toggle" title="Mostrar Área de Trabalho"><span class="icon-desktop-sm"></span></button>
+                <button class="btn-quick-launch" data-app="explorer" data-param="projetos" title="Meus Projetos"><span class="icon-folder-sm"></span></button>
+                <button class="btn-quick-launch" data-app="notepad" title="Bloco de Notas"><span class="icon-notepad-sm"></span></button>
+                <button class="btn-quick-launch" data-app="mail" title="Outlook Express (Contato)"><span class="icon-mail-sm"></span></button>
+                <button class="btn-quick-launch" data-app="snake" title="Cobrinha"><span>🐍</span></button>
+                <button class="btn-quick-launch" data-app="paint" title="Paint"><span class="icon-paint-sm"></span></button>
+                <span class="quick-launch-handle"></span>
+            </div>
+
+            <!-- Abas Dinâmicas de Janelas em Execução -->
+            <div id="taskbar-tasks" class="taskbar-tasks">
+                <!-- Botão legado mantido para retrocompatibilidade -->
+                <button id="taskbar-win-btn" class="taskbar-tab is-hidden" aria-label="Alternar Janela" data-app-id="explorer">
+                    <span id="taskbar-win-icon" class="icon-folder-sm"></span>
+                    <span id="taskbar-win-title">Meus Projetos</span>
+                </button>
+            </div>
+
+            <!-- Bandeja do Sistema (System Tray) -->
+            <div class="taskbar-tray" id="taskbar-tray">
+                <button id="tray-vol-btn" class="tray-btn" title="Controle de Volume (sndvol32)" aria-label="Controle de Volume" aria-expanded="false">
+                    <span id="tray-volume-icon" class="tray-icon icon-volume" aria-hidden="true">
+                        <svg class="svg-speaker" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 5H5L9 2V14L5 11H2V5Z" fill="#000000"/>
+                            <path d="M2 6H5L8 3.5V12.5L5 10H2V6Z" fill="#ffff00"/>
+                            <path class="speaker-wave wave-1" d="M11 5C11.6 5.8 12 6.8 12 8C12 9.2 11.6 10.2 11 11" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+                            <path class="speaker-wave wave-2" d="M13 3C14.2 4.4 15 6.1 15 8C15 9.9 14.2 11.6 13 13" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+                            <path class="speaker-mute-line" d="M2 14L14 2" stroke="#d00000" stroke-width="2" stroke-linecap="round" style="display:none;"/>
+                        </svg>
+                    </span>
+                </button>
+                <span class="tray-icon icon-dialup" title="Conexão de Rede Ativa"></span>
+                <button id="taskbar-clock-btn" class="tray-clock-btn" title="Clique para abrir Data/Hora">
+                    <span id="taskbar-clock" class="taskbar-clock">00:00</span>
+                </button>
+            </div>
+        </footer>
+
+        <!-- ============================================================
+             DIÁLOGO MODAL RETRÔ DO SISTEMA (SUBSTITUIÇÃO DE ALERT)
+             ============================================================ -->
+        <div id="retro-dialog-overlay" class="modal-dialog-overlay is-hidden" aria-hidden="true">
+            <div id="retro-dialog-win" class="explorer-window win-dialog retro-modal-win is-hidden is-focused" role="alertdialog" aria-modal="true" aria-labelledby="retro-dialog-title">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span id="retro-dialog-title-icon" class="window-title-icon icon-dialog-title-sm" aria-hidden="true"></span>
+                        <span id="retro-dialog-title" class="window-title-caption">Mensagem do Sistema</span>
+                    </div>
+                    <div class="window-controls">
+                        <button id="btn-retro-dialog-close" class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+                <div class="retro-dialog-body">
+                    <div id="retro-dialog-icon" class="retro-dialog-icon-box icon-dialog-info"></div>
+                    <div class="retro-dialog-content">
+                        <p id="retro-dialog-msg" class="retro-dialog-text"></p>
+                    </div>
+                </div>
+                <div class="dialog-button-row">
+                    <button class="btn-retro btn-default" id="btn-retro-dialog-ok">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             DICA DO DIA DO WINDOWS 98 (ONBOARDING PARA RECRUTADORES)
+             ============================================================ -->
+        <div id="tip-dialog-overlay" class="modal-dialog-overlay is-hidden" aria-hidden="true">
+            <div id="win-tip" class="explorer-window win-dialog win-tip-container is-hidden is-focused" role="dialog" aria-modal="true" aria-labelledby="tip-title-text" style="width: 490px; max-width: 92vw;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="window-title-icon" aria-hidden="true" style="font-size:12px;">💡</span>
+                        <span id="tip-title-text" class="window-title-caption">Bem-vindo ao RetroOS - Portfólio de Guilherme Gomes Justi</span>
+                    </div>
+                    <div class="window-controls">
+                        <button id="btn-tip-close-top" class="btn-win-ctrl btn-win-close" title="Fechar">✕</button>
+                    </div>
+                </header>
+
+                <div class="tip-dialog-body">
+                    <div class="tip-header-row">
+                        <div class="tip-bulb-icon" aria-hidden="true">💡</div>
+                        <div class="tip-header-text">
+                            <strong>Você sabia...</strong>
+                            <p class="tip-subheading">Guia Rápido de Navegação Técnica &amp; Recrutamento:</p>
+                        </div>
+                    </div>
+
+                    <div class="tip-card-frame">
+                        <ul class="tip-bullets-list">
+                            <li>
+                                <strong>1. Projetos &amp; Código-Fonte:</strong>
+                                <span>Abra o ícone <em>"Meus Projetos"</em> na Área de Trabalho para navegar pelos executáveis (.EXE), visualizar stacks, arquitetura e acessar os repositórios reais no GitHub.</span>
+                            </li>
+                            <li>
+                                <strong>2. Habilidades, Stack &amp; Hardware:</strong>
+                                <span>Dê um duplo clique em <em>"Sistema.cpl"</em> ou <em>"Meu Computador > Propriedades"</em> para inspecionar a árvore do Gerenciador de Dispositivos (C, C++, Python, Linux, WebGL).</span>
+                            </li>
+                            <li>
+                                <strong>3. Contato &amp; Currículo:</strong>
+                                <span>No ícone <em>"Contato.eml"</em> ou pelo menu Iniciar, acesse o Outlook Express para ver links de <strong>GitHub / LinkedIn</strong>, copiar o e-mail ou baixar o <strong>Currículo Vitae (.txt)</strong>.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-footer-options">
+                        <label class="tip-checkbox-label">
+                            <input type="checkbox" id="chk-show-tips-startup" checked />
+                            <span>Mostrar esta tela de boas-vindas na inicialização</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="tip-actions-row">
+                    <button class="btn-retro" id="btn-tip-open-projects" title="Abrir pasta de projetos">Meus Projetos</button>
+                    <button class="btn-retro btn-default" id="btn-tip-close">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay de Protetor de Tela em Tela Cheia -->
+        <div id="screensaver-overlay" class="screensaver-overlay is-hidden" aria-hidden="true">
+            <canvas id="screensaver-fullscreen-canvas"></canvas>
+        </div>
+
+        <!-- Overlay CRT: Scanlines + Vinheta de Vidro Curvo (Modos: off, subtle, tube) -->
+        <div id="crt-overlay" class="crt-screen-overlay crt-mode-subtle" aria-hidden="true"></div>
+    </div>
+
+    <!-- Scripts da Arquitetura Modular: Sistema Operacional e Motor 3D -->
+    <script src="os_core.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
