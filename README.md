@@ -12,7 +12,7 @@ Repositório pessoal que reúne projetos de software, estudos e protótipos. Os 
 
 ## Outros conteúdos
 
-- [Projetos legados de biblioteca de mídia](projects/_legado_desktop/): versões anteriores, materiais de recuperação e arquivos históricos. Mantidos para referência.
+- [Projetos legados de biblioteca de mídia](projects/_legado_desktop/): versões anteriores, materiais de recuperação e arquivos históricos. Mantidos para referência. O [inventário do legado](projects/INVENTARIO_LEGADO.md) lista os ZIPs, atalhos e possíveis duplicatas sem remover conteúdo.
 - [System Monitor API](projects/system-monitor-api/): pasta inicial com diretrizes; documentação e implementação ainda não estão presentes.
 - [Assets](assets/): imagens e animações usados em documentação e apresentação.
 
