@@ -1,106 +1,70 @@
 # MediaVault — Media Management Utility
 
-Aplicativo desktop em Python/Tkinter para gerenciamento de downloads, organização
-de arquivos, cópia segura para armazenamento removível e verificação de integridade.
+Aplicativo desktop em Python/Tkinter para organizar downloads e arquivos, copiar itens para armazenamento removível e verificar a integridade das cópias.
 
-## Estrutura
+## Requisitos
 
-```text
-biblioteca/
-├── main.py                  # ponto de entrada
-├── config.py                # configuração local do usuário
-├── requirements.txt
-├── pytest.ini
-├── download/
-│   └── downloader.py        # downloads HTTP e yt-dlp
-├── gui/
-│   └── interface.py         # interface Tkinter
-├── storage/
-│   └── pendrive.py          # detecção/cópia segura
-├── security/
-│   ├── hash.py              # SHA-256
-│   └── logs.py              # logs
-├── utils/
-│   └── organizer.py         # classificação e bloqueios
-├── tests/                   # suíte principal
-├── backup/                  # versões antigas e recuperação
-├── _arquivos_antigos/       # código legado
-├── data/                    # dados de execução/testes
-├── teste_seguranca/         # arquivos usados nos testes de segurança
-└── ATAQUE/                  # material de teste de segurança
-```
+- Python 3.10 ou superior recomendado.
+- FFmpeg no PATH para recursos de conversão de mídia.
+- Conexão com a internet para downloads.
 
-## Como executar
+## Instalar e executar
 
-No Windows:
+No Windows, a partir da raiz deste repositório:
 
 ```powershell
-cd C:\caminho\para\biblioteca
+cd projects/media-downloader
 python -m pip install -r requirements.txt
 python main.py
 ```
 
-Para executar os testes:
+O Tkinter é distribuído com muitas instalações do Python para Windows. Em outras plataformas, instale o pacote Tk da distribuição do Python, se necessário.
+
+## Testes
+
+O diretório `tests/` contém a suíte pytest. Execute-a a partir da pasta do projeto:
 
 ```powershell
-python -m pytest -v
+python -m pytest tests -v
 ```
 
-A suíte atual contém **63 testes** e deve terminar com:
+A suíte pode evoluir; não há contagem fixa de testes indicada aqui. O workflow de integração contínua na raiz do repositório executa apenas os testes da calculadora de consumo elétrico, não esta suíte.
+
+## Estrutura atual
 
 ```text
-63 passed
+projects/media-downloader/
+├── config.py
+├── download/
+├── gui/
+├── security/
+├── storage/
+├── tests/
+├── tools/
+├── utils/
+├── LEIA-ME.md
+├── main.py
+├── pytest.ini
+└── requirements.txt
 ```
 
-## Downloader
+A pasta `.archive/` contém arquivos de referência/recuperação e é ignorada pelo Git conforme o `.gitignore` local.
 
-O downloader suporta:
+## Recursos
 
-- downloads HTTP/HTTPS diretos;
-- downloads via yt-dlp;
-- vídeo e MP3;
-- fila sequencial;
-- cancelamento;
-- downloads em lote;
-- limite máximo de **5 GB por arquivo**;
-- validação de `Content-Length`;
-- proteção contra arquivos parciais;
-- detecção de download truncado;
-- nomes seguros para Windows;
-- prevenção de colisão de nomes;
-- atualização de progresso, velocidade e ETA.
+- Downloads diretos HTTP/HTTPS e via yt-dlp.
+- Fila sequencial, cancelamento e downloads em lote.
+- Limite de tamanho por arquivo e validação de downloads incompletos.
+- Nomes de arquivo seguros e prevenção contra colisões.
+- Cópia para armazenamento removível e validação SHA-256.
+- Registro de operações.
 
-Para MP3 e determinados downloads de vídeo, o **FFmpeg** precisa estar instalado e disponível no `PATH`.
+## Dependências e observações
 
-## Segurança
+As dependências Python estão em [requirements.txt](requirements.txt). O FFmpeg é um programa externo e precisa ser instalado separadamente para conversões que dependem dele.
 
-O projeto possui:
+Use o aplicativo apenas para conteúdo que você tem autorização para baixar. A disponibilidade de downloads depende dos sites e serviços acessados e dos termos aplicáveis.
 
-- bloqueio de extensões potencialmente perigosas;
-- proteção contra nomes reservados do Windows;
-- proteção contra path traversal;
-- limite de tamanho;
-- cópia segura;
-- verificação SHA-256;
-- logs de operações;
-- testes específicos para nomes como `CON`, `PRN`, `AUX` e `NUL`.
+## Histórico e privacidade
 
-## Backups
-
-Arquivos antigos não ficam dentro de `tests/`, para que o pytest não tente
-executá-los como testes.
-
-Os backups relacionados ao problema atual ficam em:
-
-```text
-backup/
-└── recuperacao/
-```
-
-Eles são mantidos apenas para recuperação e não participam da suíte.
-
-## Observação
-
-`__pycache__` e `.pytest_cache` são arquivos gerados automaticamente e foram
-removidos da cópia organizada. Eles voltarão a aparecer localmente quando Python
-e pytest forem executados, mas não devem ser tratados como código do projeto.
+As pastas antigas foram mantidas para referência e recuperação. Elas não são necessárias para executar a versão atual. Confira cuidadosamente arquivos de configuração e dados antes de publicar alterações: a configuração local é gravada no perfil do usuário e não deve conter credenciais.
