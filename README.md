@@ -1,95 +1,69 @@
-<p align="center">
-  <img src="assets/ventilador.gif" alt="Animação de boas-vindas" width="180" />
-</p>
+# Projetos de Guilherme
 
-# 🚀 Repositório de Projetos de Engenharia de Software
+Repositório pessoal que reúne projetos de software, estudos e protótipos. Os projetos têm escopos e níveis de acabamento diferentes; consulte o README de cada pasta antes de executar.
 
-<p align="left">
-  <img src="assets/rosto.gif" alt="Foto de perfil" width="80" align="left" style="margin-right:14px; border-radius:50%;" />
-  
-  **Guilherme** — Desenvolvedor de Software | Python · Clean Code · TDD
-  
-  Bem-vindo ao meu repositório central de projetos técnicos! Aqui você encontra aplicações desenvolvidas com foco em excelência de código, tipagem estrita, testes automatizados e documentação formal.
-</p>
+## Projetos principais
 
-<br clear="left" />
+| Projeto | Descrição | Tecnologias / execução |
+| --- | --- | --- |
+| [Calculadora de Consumo Elétrico](consumo-energia/) | Aplicativo de terminal para estimar consumo mensal de energia e custo. | Python 3.10+; sem dependências externas. |
+| [Portfólio 3D](portfolio-3d/) | Experiência web interativa com modelo 3D e interface própria. | HTML, CSS, JavaScript e Three.js local. Abra `index.html`; consulte o código para requisitos de execução. |
+| [MediaVault](projects/media-downloader/) | Aplicativo desktop para organizar downloads e copiar arquivos com verificação de integridade. | Python, Tkinter, yt-dlp e requests; consulte [LEIA-ME](projects/media-downloader/LEIA-ME.md). |
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Code Style: PEP 8](https://img.shields.io/badge/Code%20Style-PEP%208-informational?style=for-the-badge)](https://peps.python.org/pep-0008/)
-[![Test Suite](https://img.shields.io/badge/Tests-100%25%20Passing-success?style=for-the-badge&logo=pytest&logoColor=white)](consumo-energia/test_app.py)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow?style=for-the-badge&logo=git&logoColor=white)](https://www.conventionalcommits.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+## Outros conteúdos
 
----
+- [Projetos legados de biblioteca de mídia](projects/_legado_desktop/): versões anteriores, materiais de recuperação e arquivos históricos. Mantidos para referência.
+- [System Monitor API](projects/system-monitor-api/): pasta inicial com diretrizes; documentação e implementação ainda não estão presentes.
+- [Assets](assets/): imagens e animações usados em documentação e apresentação.
 
-## 🏛️ Padrões de Engenharia Adotados
+## Executar a calculadora
 
-Todo o código deste repositório adere a princípios consolidados de desenvolvimento profissional:
+Requer Python 3.10 ou superior:
 
-- **Clean Code & Arquitetura Limpa**: Nomenclatura semântica, responsabilidade única (SRP) e separação entre regras de negócio e camadas de I/O.
-- **Tipagem Estrita (*Type Hinting*)**: Anotações completas de tipos em todas as assinaturas de funções e constantes.
-- **Programação Defensiva**: Validação rigorosa de entradas, tratamento de limites de borda e garantia de estabilidade.
-- **Testes Automatizados (TDD/Unit Testing)**: Suítes com cobertura de cenários nominais, fracionários, limites de borda e caminhos de exceção.
-- **Padronização de Commits**: Histórico rastreável e semântico seguindo o padrão [*Conventional Commits*](https://www.conventionalcommits.org/).
-
----
-
-## 📂 Projetos Disponíveis
-
-> Clique no botão **▶ Acessar** para ir direto ao projeto.
-
-| # | Projeto | Descrição | Stack | Status | Acesso |
-| :---: | :--- | :--- | :---: | :---: | :---: |
-| 01 | **⚡ Calculadora de Consumo Elétrico** | Simulador CLI para estimativa de consumo energético (kWh) e projeção financeira mensal com validação defensiva e modelagem matemática. | Python 3.10+ · `unittest` | ✅ Concluído | [**▶ Acessar**](consumo-energia/) |
-
----
-
-## 🗂️ Estrutura do Repositório
-
-```text
-.
-├── .gitignore                   # Regras de exclusão para Python, IDEs e SOs
-├── LICENSE                      # Licença MIT
-├── README.md                    # Este arquivo — vitrine e portfólio profissional
-├── assets/                      # Recursos visuais, animações e mídias
-│   ├── energia.gif              # Animação demonstrativa do projeto de energia
-│   ├── ventilador.gif           # Animação do banner de boas-vindas
-│   ├── rosto.gif                # Foto de perfil do desenvolvedor
-│   └── poesiaarte.gif           # Banner de encerramento
-└── consumo-energia/             # Projeto 01: Calculadora de Consumo Elétrico
-    ├── app.py                   # Código-fonte principal com validação e tipagem estrita
-    ├── test_app.py              # Suíte de 16 testes unitários automatizados
-    ├── requirements.txt         # Manifesto de ambiente e dependências
-    └── README.md                # Documentação técnica detalhada com LaTeX
-```
-
----
-
-## ⚡ Como Começar
-
-### Pré-requisitos
-- [Python 3.10+](https://www.python.org/downloads/)
-- [Git](https://git-scm.com/)
-
-### Clonando o Repositório
 ```bash
-git clone https://github.com/gu1just1/projetos.git
-cd projetos
+python consumo-energia/app.py
 ```
 
-### Executando os Testes Automatizados (Global)
+Para executar os testes da calculadora:
+
 ```bash
 python -m unittest discover -s consumo-energia -v
 ```
 
----
+## Executar o MediaVault
 
-## 📜 Licença
+No Windows, instale as dependências do projeto e inicie o aplicativo:
 
-Este projeto está distribuído sob a licença **MIT**. Consulte o arquivo [LICENSE](LICENSE) para obter mais informações.
+```powershell
+cd projects/media-downloader
+python -m pip install -r requirements.txt
+python main.py
+```
 
----
+O FFmpeg precisa estar disponível no PATH para recursos de conversão de mídia. Veja instruções e limitações no [guia do MediaVault](projects/media-downloader/LEIA-ME.md).
 
-<p align="center">
-  <img src="assets/poesiaarte.gif" alt="Arte de encerramento" width="520" />
-</p>
+## Testes automatizados
+
+A integração contínua executa a suíte da calculadora em Python 3.11. O MediaVault possui testes pytest no diretório do projeto; sua execução e status não são cobertos pelo workflow atual.
+
+```bash
+python -m unittest discover -s consumo-energia -p "test_*.py" -v
+```
+
+## Estrutura resumida
+
+```text
+.
+├── .github/workflows/ci.yml
+├── assets/
+├── consumo-energia/
+├── portfolio-3d/
+└── projects/
+    ├── media-downloader/
+    ├── _legado_desktop/
+    └── system-monitor-api/
+```
+
+## Licença
+
+O repositório inclui uma licença MIT. Antes de reutilizar um projeto específico, confira também seus arquivos e dependências: componentes de terceiros podem ter termos próprios.
